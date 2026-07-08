@@ -1,5 +1,94 @@
 {
-  "processedIds": [
-    "6a607460bd71"
-  ]
+  "processed_advisories": {
+    "6a607460bd71": {
+      "id": "6a607460bd71",
+      "title": "Migrated Advisory",
+      "date": "Unknown",
+      "category": "GST",
+      "sent": true,
+      "sentAt": "2026-07-08T11:19:13.434Z",
+      "source": "gst"
+    },
+    "21c63ab408d3": {
+      "id": "21c63ab408d3",
+      "title": "Advisory on Revision of Timeline for Amendment of Aggregate Annual Turnover (AATO), 2026",
+      "date": "Jul 1st, 2026",
+      "category": "RETURNS",
+      "sent": true,
+      "sentAt": "2026-07-08T11:19:33.124Z",
+      "source": "gst"
+    },
+    "8a0024e012c7": {
+      "id": "8a0024e012c7",
+      "title": "Gross and Net GST revenue collections for the month of June, 2026",
+      "date": "Jul 1st, 2026",
+      "category": "OTHERS",
+      "sent": true,
+      "sentAt": "2026-07-08T11:19:48.223Z",
+      "source": "gst"
+    },
+    "333c6738e5b7": {
+      "id": "333c6738e5b7",
+      "title": "Advisory on e-Invoice API and e-Way Bill by IRN API changes for mandatory capture of Ship-to GSTIN and Voluntary Closure of e-Way Bill",
+      "date": "Jun 17th, 2026",
+      "category": "E-INVOICE",
+      "sent": true,
+      "sentAt": "2026-07-08T11:19:59.522Z",
+      "source": "gst"
+    },
+    "d28cf7a64a8a": {
+      "id": "d28cf7a64a8a",
+      "title": "Extension of timeline for implementation of mandatory \"Ship To GSTIN\" and Voluntary Closure of E-Way Bill functionalities",
+      "date": "Jun 9th, 2026",
+      "category": "EWAY BILL",
+      "sent": true,
+      "sentAt": "2026-07-08T11:20:05.464Z",
+      "source": "gst"
+    },
+    "0ddb52fa3152": {
+      "id": "0ddb52fa3152",
+      "title": "Gross and Net GST revenue collections for the month of May, 2026",
+      "date": "Jun 1st, 2026",
+      "category": "OTHERS",
+      "sent": true,
+      "sentAt": "2026-07-08T11:20:20.748Z",
+      "source": "gst"
+    },
+    "03f992bddac6": {
+      "id": "03f992bddac6",
+      "title": "Advisory to Taxpayers and Stakeholders – Enhancements in the e-Way Bill (EWB) Portal",
+      "date": "May 21st, 2026",
+      "category": "E-WAY BILL",
+      "sent": true,
+      "sentAt": "2026-07-08T11:20:31.339Z",
+      "source": "gst"
+    },
+    "20107c262b0a": {
+      "id": "20107c262b0a",
+      "title": "Filing of Annexure-B for Refund Applications involving Accumulated ITC using the offline utility in GST portal",
+      "date": "May 18th, 2026",
+      "category": "REFUND",
+      "sent": true,
+      "sentAt": "2026-07-08T11:20:42.379Z",
+      "source": "gst"
+    },
+    "c3b8cfc88095": {
+      "id": "c3b8cfc88095",
+      "title": "Gross and Net GST revenue collections for the month of Apr, 2026",
+      "date": "May 1st, 2026",
+      "category": "OTHERS",
+      "sent": true,
+      "sentAt": "2026-07-08T11:20:55.395Z",
+      "source": "gst"
+    },
+    "7bbd4f321234": {
+      "id": "7bbd4f321234",
+      "title": "Introduction of IMS Offline Tool",
+      "date": "Apr 21st, 2026",
+      "category": "RETURNS",
+      "sent": true,
+      "sentAt": "2026-07-08T11:21:01.177Z",
+      "source": "gst"
+    }
+  }
 }
