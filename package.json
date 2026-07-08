@@ -1,0 +1,21 @@
+{
+  "name": "auto-mailer",
+  "version": "1.0.0",
+  "description": "Flexible serverless scraper & summarizer framework",
+  "main": "runner.js",
+  "type": "module",
+  "scripts": {
+    "start": "node runner.js",
+    "test-scrape": "node runner.js --dry-run",
+    "dashboard": "node server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.11.0",
+    "axios": "^1.18.1",
+    "docx": "^8.5.0",
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.13",
+    "pdf-parse": "^1.1.1",
+    "playwright": "^1.44.0"
+  }
+}

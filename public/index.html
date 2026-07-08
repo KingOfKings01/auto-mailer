@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Scraper Control Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      
+      --accent-color: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-light: #eff6ff;
+      
+      --success-color: #10b981;
+      --success-light: #ecfdf5;
+      --error-color: #ef4444;
+      --error-light: #fef2f2;
+      --warning-color: #f59e0b;
+      --warning-light: #fffbeb;
+      
+      --font-sans: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      --font-mono: 'Courier New', Courier, monospace;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.04), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+    }
+
+    .app-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header styling */
+    .app-header {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .logo-container h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.025em;
+    }
+
+    .logo-container p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .status-panel {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .status-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .status-item .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .status-badge {
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
+      margin-top: 4px;
+    }
+
+    .status-idle {
+      background-color: #f1f5f9;
+      color: var(--text-secondary);
+    }
+
+    .status-running {
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+      animation: pulse 2s infinite;
+    }
+
+    .status-success {
+      background-color: var(--success-light);
+      color: var(--success-color);
+    }
+
+    .status-error {
+      background-color: var(--error-light);
+      color: var(--error-color);
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    /* Actions Panel */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 320px 1fr;
+      }
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Buttons */
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-color);
+      color: #ffffff;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-primary:disabled {
+      background-color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+    }
+
+    /* Logs view */
+    .console-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 250px;
+    }
+
+    .console-box {
+      flex: 1;
+      background-color: #0f172a;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      overflow-y: auto;
+      max-height: 350px;
+      white-space: pre-wrap;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    /* Filter & Table Container */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      padding: 10px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-color);
+    }
+
+    .filter-select {
+      padding: 10px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      outline: none;
+      background-color: #ffffff;
+      color: var(--text-secondary);
+      min-width: 150px;
+    }
+
+    /* Table styling */
+    .advisory-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .advisory-table th {
+      background-color: #f8fafc;
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .advisory-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    .advisory-table tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 12px;
+    }
+
+    .badge-sent {
+      background-color: var(--success-light);
+      color: var(--success-color);
+    }
+
+    .badge-unsent {
+      background-color: var(--warning-light);
+      color: var(--warning-color);
+    }
+
+    /* Custom toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 22px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e1;
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--success-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    .loading-text {
+      text-align: center;
+      padding: 30px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--accent-color);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-container">
+        <h1>Universal Scraper Portal</h1>
+        <p>Dynamic Scraper, Gemini Summarizer & Email Dispatcher Dashboard</p>
+      </div>
+      <div class="status-panel">
+        <div class="status-item">
+          <span class="label">Runner Status</span>
+          <span id="runner-badge" class="status-badge status-idle">Idle</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="dashboard-grid">
+      <!-- Left Column: Operations -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Scraper Operations
+        </div>
+        
+        <button id="btn-run-scrape" class="btn btn-primary">
+          <span id="run-text">Run Scraping Now</span>
+          <div id="run-spinner" class="spinner" style="display: none;"></div>
+        </button>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px;">
+          <div class="status-item" style="align-items: flex-start;">
+            <span class="label">Last Executed Run</span>
+            <span id="last-run-time" style="font-weight: 500; font-size: 0.95rem; margin-top: 4px;">Never</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Logs / Output Console -->
+      <div class="card console-wrapper">
+        <div class="console-header">
+          <div class="card-title">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
+            Live Execution Console
+          </div>
+          <button id="btn-clear-logs" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem; width: auto;">Clear Log</button>
+        </div>
+        <div id="console-output" class="console-box">Console output will stream here when scraping starts...</div>
+      </div>
+    </div>
+
+    <!-- History / Logs section -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4"/></svg>
+        Data Read Log & Email States
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-row">
+        <input type="text" id="search-title" class="search-input" placeholder="Search by advisory title...">
+        <select id="filter-source" class="filter-select">
+          <option value="">All Sources</option>
+        </select>
+        <select id="filter-sent" class="filter-select">
+          <option value="">All Email States</option>
+          <option value="sent">Sent</option>
+          <option value="unsent">Unsent / Failed</option>
+        </select>
+      </div>
+
+      <!-- History Table -->
+      <div class="table-container">
+        <table class="advisory-table">
+          <thead>
+            <tr>
+              <th style="width: 100px;">Source</th>
+              <th>Advisory Title</th>
+              <th style="width: 140px;">Publish Date</th>
+              <th style="width: 120px;">Category</th>
+              <th style="width: 120px;">Status</th>
+              <th style="width: 100px; text-align: center;">Email Sent</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <tr>
+              <td colspan="6" class="loading-text">Loading logs history...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let historyData = {};
+
+    async function fetchHistory() {
+      try {
+        const response = await fetch('/api/history');
+        historyData = await response.json();
+        renderTable();
+        populateSourceDropdown();
+      } catch (err) {
+        console.error('Failed to load history:', err);
+      }
+    }
+
+    function populateSourceDropdown() {
+      const sources = new Set();
+      Object.values(historyData).forEach(item => {
+        if (item.source) sources.add(item.source);
+      });
+
+      const sourceSelect = document.getElementById('filter-source');
+      // Keep only first option
+      sourceSelect.innerHTML = '<option value="">All Sources</option>';
+      sources.forEach(src => {
+        const opt = document.createElement('option');
+        opt.value = src;
+        opt.textContent = src.toUpperCase();
+        sourceSelect.appendChild(opt);
+      });
+    }
+
+    function renderTable() {
+      const search = document.getElementById('search-title').value.toLowerCase();
+      const sourceFilter = document.getElementById('filter-source').value;
+      const sentFilter = document.getElementById('filter-sent').value;
+      const tbody = document.getElementById('history-body');
+
+      const items = Object.values(historyData);
+      
+      // Sort newest first
+      items.sort((a, b) => {
+        const dateA = a.sentAt ? new Date(a.sentAt) : new Date(0);
+        const dateB = b.sentAt ? new Date(b.sentAt) : new Date(0);
+        return dateB - dateA;
+      });
+
+      const filtered = items.filter(item => {
+        const titleMatch = item.title.toLowerCase().includes(search);
+        const sourceMatch = !sourceFilter || item.source === sourceFilter;
+        const sentMatch = !sentFilter || 
+          (sentFilter === 'sent' && item.sent) || 
+          (sentFilter === 'unsent' && !item.sent);
+        return titleMatch && sourceMatch && sentMatch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="loading-text">No matching records found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      filtered.forEach(item => {
+        const tr = document.createElement('tr');
+        
+        const statusBadge = item.sent 
+          ? `<span class="badge badge-sent">Dispatched</span>` 
+          : `<span class="badge badge-unsent">Unsent / Failed</span>`;
+
+        tr.innerHTML = `
+          <td style="font-weight: 600; color: var(--accent-color);">${(item.source || 'gst').toUpperCase()}</td>
+          <td style="font-weight: 500;">${item.title}</td>
+          <td style="color: var(--text-secondary);">${item.date || 'N/A'}</td>
+          <td><span style="background-color: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${item.category || 'N/A'}</span></td>
+          <td>${statusBadge}</td>
+          <td style="text-align: center;">
+            <label class="switch">
+              <input type="checkbox" data-id="${item.id}" ${item.sent ? 'checked' : ''} onchange="toggleSentStatus(this)">
+              <span class="slider"></span>
+            </label>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function toggleSentStatus(checkbox) {
+      const id = checkbox.getAttribute('data-id');
+      const isSent = checkbox.checked;
+      
+      try {
+        const res = await fetch('/api/history/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, sent: isSent })
+        });
+        
+        if (res.ok) {
+          const result = await res.json();
+          // Update local data and re-render table row badges
+          historyData[id] = result.updated;
+          renderTable();
+        } else {
+          // Revert checkbox state
+          checkbox.checked = !isSent;
+          alert('Failed to update email sent status.');
+        }
+      } catch (err) {
+        console.error(err);
+        checkbox.checked = !isSent;
+      }
+    }
+
+    // Monitor runner status
+    async function updateRunnerStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const state = await res.json();
+
+        const badge = document.getElementById('runner-badge');
+        const runBtn = document.getElementById('btn-run-scrape');
+        const runText = document.getElementById('run-text');
+        const runSpinner = document.getElementById('run-spinner');
+
+        badge.className = 'status-badge';
+        if (state.status === 'running') {
+          badge.textContent = 'Running...';
+          badge.classList.add('status-running');
+          runBtn.disabled = true;
+          runText.textContent = 'Running Automation...';
+          runSpinner.style.display = 'inline-block';
+        } else if (state.status === 'error') {
+          badge.textContent = 'Error';
+          badge.classList.add('status-error');
+          runBtn.disabled = false;
+          runText.textContent = 'Run Scraping Now';
+          runSpinner.style.display = 'none';
+        } else {
+          badge.textContent = 'Idle';
+          badge.classList.add('status-idle');
+          runBtn.disabled = false;
+          runText.textContent = 'Run Scraping Now';
+          runSpinner.style.display = 'none';
+        }
+
+        if (state.lastRun) {
+          document.getElementById('last-run-time').textContent = new Date(state.lastRun).toLocaleString();
+        }
+
+        // Render console output logs
+        const consoleOutput = document.getElementById('console-output');
+        if (state.logs.length > 0) {
+          const fullLog = state.logs.join('');
+          if (consoleOutput.textContent !== fullLog) {
+            consoleOutput.textContent = fullLog;
+            // Auto scroll to bottom
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            // Reload history to show newly scraped data
+            fetchHistory();
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Event listeners
+    document.getElementById('btn-run-scrape').addEventListener('click', async () => {
+      try {
+        await fetch('/api/run', { method: 'POST' });
+        updateRunnerStatus();
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    document.getElementById('btn-clear-logs').addEventListener('click', async () => {
+      try {
+        await fetch('/api/status/reset', { method: 'POST' });
+        document.getElementById('console-output').textContent = 'Console output cleared.';
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    // Wire up search & filter inputs
+    document.getElementById('search-title').addEventListener('input', renderTable);
+    document.getElementById('filter-source').addEventListener('change', renderTable);
+    document.getElementById('filter-sent').addEventListener('change', renderTable);
+
+    // Init page load
+    fetchHistory();
+    setInterval(updateRunnerStatus, 1500);
+  </script>
+</body>
+</html>
