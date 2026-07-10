@@ -94,6 +94,48 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (url.pathname === '/api/history/edit' && method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const { id, title, date, category, source, sent } = JSON.parse(body);
+        if (!id) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Missing advisory ID' }));
+          return;
+        }
+
+        const history = loadHistory();
+        if (history.processed_advisories && history.processed_advisories[id]) {
+          if (title !== undefined) history.processed_advisories[id].title = title;
+          if (date !== undefined) history.processed_advisories[id].date = date;
+          if (category !== undefined) history.processed_advisories[id].category = category;
+          if (source !== undefined) history.processed_advisories[id].source = source;
+          if (sent !== undefined) {
+            const wasSent = history.processed_advisories[id].sent;
+            history.processed_advisories[id].sent = !!sent;
+            if (!!sent && !wasSent) {
+              history.processed_advisories[id].sentAt = new Date().toISOString();
+            } else if (!sent) {
+              history.processed_advisories[id].sentAt = null;
+            }
+          }
+          saveHistory(history);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: true, updated: history.processed_advisories[id] }));
+        } else {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Advisory not found in history' }));
+        }
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   if (url.pathname === '/api/run' && method === 'POST') {
     if (runState.status === 'running') {
       res.writeHead(400, { 'Content-Type': 'application/json' });
