@@ -176,7 +176,9 @@ async function sendEmail(item, summaryText, attachments) {
   });
 
   const formattedSummary = summaryText
+    .replace(/^[ \t]*\*[ \t]*/gm, '• ') // Replace leading asterisks with bullets
     .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // bold markdown to HTML
+    .replace(/\*/g, '') // Remove any remaining asterisks
     .replace(/\n/g, '<br>');
 
   const mailOptions = {

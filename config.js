@@ -1,13 +1,30 @@
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const jsonConfigPath = path.join(__dirname, 'config.json');
+let overrides = {};
+if (fs.existsSync(jsonConfigPath)) {
+  try {
+    overrides = JSON.parse(fs.readFileSync(jsonConfigPath, 'utf-8'));
+  } catch (e) {
+    console.error('Failed to parse config.json:', e);
+  }
+}
+
 export const CONFIG = {
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
-  EMAIL_SENDER: process.env.EMAIL_SENDER || '',
-  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD || '', // Gmail App Password
-  EMAIL_RECIPIENT: process.env.EMAIL_RECIPIENT || 'shabanamulla@cnkindia.com',
-  SMTP_HOST: process.env.SMTP_HOST || 'smtp.gmail.com',
-  SMTP_PORT: parseInt(process.env.SMTP_PORT || '587', 10),
+  GEMINI_API_KEY: overrides.GEMINI_API_KEY || process.env.GEMINI_API_KEY || '',
+  EMAIL_SENDER: overrides.EMAIL_SENDER || process.env.EMAIL_SENDER || '',
+  EMAIL_PASSWORD: overrides.EMAIL_PASSWORD || process.env.EMAIL_PASSWORD || '', // Gmail App Password
+  EMAIL_RECIPIENT: overrides.EMAIL_RECIPIENT || process.env.EMAIL_RECIPIENT || 'shabanamulla@cnkindia.com',
+  SMTP_HOST: overrides.SMTP_HOST || process.env.SMTP_HOST || 'smtp.gmail.com',
+  SMTP_PORT: parseInt(overrides.SMTP_PORT || process.env.SMTP_PORT || '587', 10),
   
   DEFAULT_PROMPT_TEMPLATE: `You are assisting in sending a formal newsletter/email notification for a new document/advisory.
 
