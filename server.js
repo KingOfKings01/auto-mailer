@@ -3,13 +3,19 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
+import dotenv from 'dotenv';
 import { loadHistory, saveHistory } from './runner.js';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
-const PUBLIC_DIR = path.join(__dirname, 'public');
+let PUBLIC_DIR = path.join(__dirname, 'public');
+if (!fs.existsSync(PUBLIC_DIR)) {
+  PUBLIC_DIR = path.resolve(__dirname, '../frontend');
+}
 
 // Global runner status state
 let runState = {
@@ -56,6 +62,58 @@ const server = http.createServer((req, res) => {
   const method = req.method;
 
   // API Endpoints
+  if (url.pathname === '/api/login' && method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const { username, password } = JSON.parse(body);
+        const dashboardUser = process.env.DASHBOARD_USER || 'admin';
+        const dashboardPass = process.env.DASHBOARD_PASS || 'admin';
+
+        if (username === dashboardUser && password === dashboardPass) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: true }));
+        } else {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: 'Invalid username or password.' }));
+        }
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  if (url.pathname === '/api/config' && method === 'GET') {
+    const authHeader = req.headers['authorization'] || '';
+    let authenticated = false;
+    if (authHeader.startsWith('Basic ')) {
+      const credentials = Buffer.from(authHeader.substring(6), 'base64').toString('ascii');
+      const [username, password] = credentials.split(':');
+      const dashboardUser = process.env.DASHBOARD_USER || 'admin';
+      const dashboardPass = process.env.DASHBOARD_PASS || 'admin';
+      if (username === dashboardUser && password === dashboardPass) {
+        authenticated = true;
+      }
+    }
+
+    if (!authenticated) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      token: process.env.GITHUB_TOKEN || '',
+      repo: process.env.GITHUB_REPO || 'KingOfKings01/auto-mailer',
+      branch: process.env.GITHUB_BRANCH || 'main'
+    }));
+    return;
+  }
+
   if (url.pathname === '/api/history' && method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     const history = loadHistory();
