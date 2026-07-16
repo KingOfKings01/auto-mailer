@@ -208,24 +208,38 @@ async function run() {
   const history = loadHistory();
   const isDryRun = process.argv.includes('--dry-run');
 
-  // Load config.json to check scraper schedules
+  // Load config.json to check scraper schedules & weekly alarms
   const configJsonPath = path.join(__dirname, 'config.json');
-  let scraperSchedules = {};
+  let alarms = [];
+  let scraperAlarms = {};
   if (fs.existsSync(configJsonPath)) {
     try {
       const cfg = JSON.parse(fs.readFileSync(configJsonPath, 'utf-8'));
-      scraperSchedules = cfg.SCRAPER_SCHEDULES || {};
+      alarms = cfg.ALARMS || [];
+      scraperAlarms = cfg.SCRAPER_ALARMS || {};
     } catch (e) {
-      console.warn('Failed to parse config.json schedules:', e.message);
+      console.warn('Failed to parse config.json:', e.message);
     }
   }
 
-  // Get current hour in IST
+  // Get current hour and day in IST
   const now = new Date();
   const istOffset = 5.5 * 60 * 60 * 1000;
   const istTime = new Date(now.getTime() + (now.getTimezoneOffset() * 60 * 1000) + istOffset);
   const currentHour = String(istTime.getHours()).padStart(2, '0');
-  console.log(`Current Time (IST): ${currentHour}:${String(istTime.getMinutes()).padStart(2, '0')}`);
+  const currentDay = istTime.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  console.log(`Current Time (IST): ${currentHour}:${String(istTime.getMinutes()).padStart(2, '0')} on ${dayNames[currentDay]}`);
+
+  // Identify active alarms for the current hour and day of the week
+  const activeAlarmIds = alarms
+    .filter(alarm => {
+      const [alarmHour] = (alarm.time || '').split(':');
+      const isCorrectHour = alarmHour === currentHour;
+      const isCorrectDay = Array.isArray(alarm.days) && alarm.days.includes(currentDay);
+      return isCorrectHour && isCorrectDay;
+    })
+    .map(alarm => alarm.id);
 
   const isScheduled = process.env.GITHUB_EVENT_NAME === 'schedule';
 
@@ -246,14 +260,19 @@ async function run() {
   for (const file of scraperFiles) {
     // Check schedule if run by GitHub Actions cron
     if (isScheduled) {
-      const scheduledTime = scraperSchedules[file];
-      if (!scheduledTime || scheduledTime === 'disabled') {
+      const assignedAlarmId = scraperAlarms[file];
+      if (!assignedAlarmId || assignedAlarmId === 'disabled') {
         console.log(`⏩ Skipping scraper ${file}: Auto-execution is disabled.`);
         continue;
       }
-      const [scheduledHour] = scheduledTime.split(':');
-      if (currentHour !== scheduledHour) {
-        console.log(`⏩ Skipping scraper ${file}: Scheduled for ${scheduledTime} IST, current hour is ${currentHour}:00 IST.`);
+      
+      const isActive = activeAlarmIds.includes(assignedAlarmId);
+      if (!isActive) {
+        const assignedAlarm = alarms.find(a => a.id === assignedAlarmId);
+        const scheduleDesc = assignedAlarm 
+          ? `scheduled for ${assignedAlarm.time} IST on [${assignedAlarm.days.map(d => dayNames[d].substring(0, 3)).join(', ')}]`
+          : 'not found in alarms';
+        console.log(`⏩ Skipping scraper ${file}: Assigned to alarm (${scheduleDesc}), but it is not active at the current hour.`);
         continue;
       }
     }
