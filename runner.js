@@ -208,6 +208,27 @@ async function run() {
   const history = loadHistory();
   const isDryRun = process.argv.includes('--dry-run');
 
+  // Load config.json to check scraper schedules
+  const configJsonPath = path.join(__dirname, 'config.json');
+  let scraperSchedules = {};
+  if (fs.existsSync(configJsonPath)) {
+    try {
+      const cfg = JSON.parse(fs.readFileSync(configJsonPath, 'utf-8'));
+      scraperSchedules = cfg.SCRAPER_SCHEDULES || {};
+    } catch (e) {
+      console.warn('Failed to parse config.json schedules:', e.message);
+    }
+  }
+
+  // Get current hour in IST
+  const now = new Date();
+  const istOffset = 5.5 * 60 * 60 * 1000;
+  const istTime = new Date(now.getTime() + (now.getTimezoneOffset() * 60 * 1000) + istOffset);
+  const currentHour = String(istTime.getHours()).padStart(2, '0');
+  console.log(`Current Time (IST): ${currentHour}:${String(istTime.getMinutes()).padStart(2, '0')}`);
+
+  const isScheduled = process.env.GITHUB_EVENT_NAME === 'schedule';
+
   // Ensure directories exist
   if (!fs.existsSync(TEMP_DIR)) {
     fs.mkdirSync(TEMP_DIR, { recursive: true });
@@ -223,6 +244,20 @@ async function run() {
   console.log(`Found ${scraperFiles.length} scraper plugin(s) to run.`);
 
   for (const file of scraperFiles) {
+    // Check schedule if run by GitHub Actions cron
+    if (isScheduled) {
+      const scheduledTime = scraperSchedules[file];
+      if (!scheduledTime || scheduledTime === 'disabled') {
+        console.log(`⏩ Skipping scraper ${file}: Auto-execution is disabled.`);
+        continue;
+      }
+      const [scheduledHour] = scheduledTime.split(':');
+      if (currentHour !== scheduledHour) {
+        console.log(`⏩ Skipping scraper ${file}: Scheduled for ${scheduledTime} IST, current hour is ${currentHour}:00 IST.`);
+        continue;
+      }
+    }
+
     const scraperPath = path.join(scrapersDir, file);
     console.log(`Running scraper: ${file}...`);
     try {
