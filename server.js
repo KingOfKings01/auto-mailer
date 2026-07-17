@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 import dotenv from 'dotenv';
-import { loadHistory, saveHistory } from './runner.js';
+import { loadHistory, saveHistory, loadEmailLogs } from './runner.js';
 
 dotenv.config();
 
@@ -118,6 +118,13 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     const history = loadHistory();
     res.end(JSON.stringify(history.processed_advisories || {}));
+    return;
+  }
+
+  if (url.pathname === '/api/email-logs' && method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    const logs = loadEmailLogs();
+    res.end(JSON.stringify(logs));
     return;
   }
 

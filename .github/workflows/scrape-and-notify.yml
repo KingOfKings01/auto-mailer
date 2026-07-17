@@ -4,7 +4,12 @@ on:
   schedule:
     # Run every hour at the start of the hour
     - cron: '0 * * * *'
-  workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      script:
+        description: 'Specify a single script to execute (e.g. gst.js). Leave empty to run all.'
+        required: false
+        default: ''
 
 jobs:
   scrape-and-email:
@@ -36,16 +41,17 @@ jobs:
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          RUN_ONLY_SCRIPT: ${{ github.event.inputs.script }}
         run: node runner.js
 
       - name: Commit and Push History Updates
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add history.json || true
+          git add history.json email_logs.json || true
           if git diff --staged --quiet; then
-            echo "No history updates to commit."
+            echo "No history or logs updates to commit."
           else
-            git commit -m "chore: update scrape history [skip ci]"
+            git commit -m "chore: update scrape history and email logs [skip ci]"
             git push origin main || git push
           fi

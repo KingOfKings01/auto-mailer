@@ -11,8 +11,41 @@ import { CONFIG } from './config.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const EMAIL_LOGS_FILE = path.join(__dirname, 'email_logs.json');
 const HISTORY_FILE = path.join(__dirname, 'history.json');
 const TEMP_DIR = path.join(__dirname, 'temp');
+
+// Load email logs
+export function loadEmailLogs() {
+  if (fs.existsSync(EMAIL_LOGS_FILE)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(EMAIL_LOGS_FILE, 'utf-8'));
+      if (Array.isArray(data)) return data;
+    } catch (e) {
+      console.error('Error reading email logs file:', e);
+    }
+  }
+  return [];
+}
+
+// Log a sent email
+export function logSentEmail(recipient, subject, content, attachments) {
+  const logs = loadEmailLogs();
+  const newLog = {
+    timestamp: new Date().toISOString(),
+    recipient: recipient,
+    subject: subject,
+    content: content,
+    attachmentCount: attachments ? attachments.length : 0,
+    attachmentTitles: attachments ? attachments.map(a => a.filename) : []
+  };
+  logs.push(newLog);
+  try {
+    fs.writeFileSync(EMAIL_LOGS_FILE, JSON.stringify(logs, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Failed to write email logs:', e);
+  }
+}
 
 // Load history
 export function loadHistory() {
@@ -154,10 +187,25 @@ async function generateSummary(item, pdfTextCombined) {
 }
 
 // Send email with attachments
-async function sendEmail(item, summaryText, attachments) {
+async function sendEmail(item, summaryText, attachments, scraperFile) {
+  let recipient = CONFIG.EMAIL_RECIPIENT;
+
+  // Try loading specific recipient for this script from config.json
+  const configJsonPath = path.join(__dirname, 'config.json');
+  if (scraperFile && fs.existsSync(configJsonPath)) {
+    try {
+      const cfg = JSON.parse(fs.readFileSync(configJsonPath, 'utf-8'));
+      if (cfg.EMAIL_RECIPIENTS && cfg.EMAIL_RECIPIENTS[scraperFile]) {
+        recipient = cfg.EMAIL_RECIPIENTS[scraperFile];
+      }
+    } catch (e) {
+      // Ignore
+    }
+  }
+
   if (!CONFIG.EMAIL_SENDER || !CONFIG.EMAIL_PASSWORD) {
     console.log('--- DRY RUN: EMAIL CONTENT ---');
-    console.log(`To: ${CONFIG.EMAIL_RECIPIENT}`);
+    console.log(`To: ${recipient}`);
     console.log(`Subject: GST Alert: ${item.title}`);
     console.log(`Body:\n${summaryText}`);
     console.log(`Attachments: ${attachments.map(a => a.filename).join(', ')}`);
@@ -183,7 +231,7 @@ async function sendEmail(item, summaryText, attachments) {
 
   const mailOptions = {
     from: CONFIG.EMAIL_SENDER,
-    to: CONFIG.EMAIL_RECIPIENT,
+    to: recipient,
     subject: `GST Alert: ${item.title}`,
     html: `
       <html>
@@ -200,6 +248,7 @@ async function sendEmail(item, summaryText, attachments) {
 
   await transporter.sendMail(mailOptions);
   console.log(`🚀 Email successfully sent for: "${item.title}"`);
+  logSentEmail(recipient, `GST Alert: ${item.title}`, summaryText, attachments);
 }
 
 // Main execution loop
@@ -207,6 +256,10 @@ async function run() {
   console.log('Starting Scraper Orchestrator...');
   const history = loadHistory();
   const isDryRun = process.argv.includes('--dry-run');
+  const runOnlyScript = process.env.RUN_ONLY_SCRIPT || process.argv.find(arg => arg.startsWith('--script='))?.split('=')[1];
+  if (runOnlyScript) {
+    console.log(`Running in SINGLE script mode: ONLY running ${runOnlyScript}`);
+  }
 
   // Load config.json to check scraper schedules & weekly alarms
   const configJsonPath = path.join(__dirname, 'config.json');
@@ -258,6 +311,11 @@ async function run() {
   console.log(`Found ${scraperFiles.length} scraper plugin(s) to run.`);
 
   for (const file of scraperFiles) {
+    if (runOnlyScript && file !== runOnlyScript) {
+      console.log(`⏩ Skipping scraper ${file}: Running in SINGLE script mode for ${runOnlyScript}.`);
+      continue;
+    }
+
     // Check schedule if run by GitHub Actions cron
     if (isScheduled) {
       const assignedAlarmId = scraperAlarms[file];
@@ -382,7 +440,7 @@ async function run() {
         // 4. Send Email
         console.log('  Dispatching email notification...');
         try {
-          await sendEmail(item, summary, attachments);
+          await sendEmail(item, summary, attachments, file);
           
           if (!isDryRun) {
             history.processed_advisories[item.id].sent = true;
