@@ -109,7 +109,8 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({
       token: process.env.GITHUB_TOKEN || '',
       repo: process.env.GITHUB_REPO || 'KingOfKings01/auto-mailer',
-      branch: process.env.GITHUB_BRANCH || 'main'
+      branch: process.env.GITHUB_BRANCH || 'main',
+      defaultEmailRecipient: process.env.EMAIL_RECIPIENT || 'shabanamulla@cnkindia.com'
     }));
     return;
   }
