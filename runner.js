@@ -203,8 +203,9 @@ async function sendEmail(item, summaryText, attachments, scraperFile) {
     }
   }
 
-  if (!CONFIG.EMAIL_SENDER || !CONFIG.EMAIL_PASSWORD) {
-    console.log('--- DRY RUN: EMAIL CONTENT ---');
+  const isDryRun = process.argv.includes('--dry-run');
+  if (!CONFIG.EMAIL_SENDER || !CONFIG.EMAIL_PASSWORD || isDryRun) {
+    console.log(`--- ${isDryRun ? 'DRY RUN' : 'NO CREDENTIALS'}: EMAIL CONTENT ---`);
     console.log(`To: ${recipient}`);
     console.log(`Subject: GST Alert: ${item.title}`);
     console.log(`Body:\n${summaryText}`);
