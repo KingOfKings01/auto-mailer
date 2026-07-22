@@ -14,8 +14,8 @@
       "title": "Advisory on Revision of Timeline for Amendment of Aggregate Annual Turnover (AATO), 2026",
       "date": "Jul 1st, 2026",
       "category": "RETURNS",
-      "sent": true,
-      "sentAt": "2026-07-09T04:11:56.658Z",
+      "sent": false,
+      "sentAt": null,
       "source": "gst"
     },
     "8a0024e012c7": {
@@ -23,8 +23,8 @@
       "title": "Gross and Net GST revenue collections for the month of June, 2026",
       "date": "Jul 1st, 2026",
       "category": "OTHERS",
-      "sent": true,
-      "sentAt": "2026-07-09T04:12:17.854Z",
+      "sent": false,
+      "sentAt": null,
       "source": "gst"
     },
     "333c6738e5b7": {
