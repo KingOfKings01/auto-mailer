@@ -251,11 +251,116 @@ async function sendEmail(item, summaryText, attachments, scraperFile) {
   logSentEmail(recipient, `GST Alert: ${item.title}`, summaryText, attachments);
 }
 
+// GitHub Sync Helpers
+async function downloadFromGithub(filename) {
+  const token = process.env.GITHUB_TOKEN;
+  const repo = process.env.GITHUB_REPO;
+  const branch = process.env.GITHUB_BRANCH || 'main';
+
+  if (!token || !repo) {
+    console.log(`[GitHub Sync] Credentials not set. Skipping download for ${filename}.`);
+    return false;
+  }
+
+  console.log(`[GitHub Sync] Downloading ${filename} from GitHub...`);
+  try {
+    const res = await axios.get(`https://api.github.com/repos/${repo}/contents/${filename}?ref=${branch}`, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    if (res.status === 200 && res.data.content) {
+      const decoded = Buffer.from(res.data.content, 'base64').toString('utf-8');
+      const filePath = path.join(__dirname, filename);
+      fs.writeFileSync(filePath, decoded, 'utf-8');
+      console.log(`[GitHub Sync] Successfully updated local ${filename} from GitHub.`);
+      return true;
+    }
+  } catch (err) {
+    if (err.response && err.response.status === 404) {
+      console.log(`[GitHub Sync] File ${filename} not found on GitHub. Using local or creating new.`);
+    } else {
+      console.error(`[GitHub Sync] Failed to download ${filename}:`, err.message);
+    }
+  }
+  return false;
+}
+
+async function uploadToGithub(filename) {
+  const token = process.env.GITHUB_TOKEN;
+  const repo = process.env.GITHUB_REPO;
+  const branch = process.env.GITHUB_BRANCH || 'main';
+
+  if (!token || !repo) {
+    return false;
+  }
+
+  const filePath = path.join(__dirname, filename);
+  if (!fs.existsSync(filePath)) {
+    return false;
+  }
+
+  console.log(`[GitHub Sync] Uploading/committing ${filename} to GitHub...`);
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const base64Content = Buffer.from(content, 'utf-8').toString('base64');
+
+    let sha = null;
+    try {
+      const getRes = await axios.get(`https://api.github.com/repos/${repo}/contents/${filename}?ref=${branch}`, {
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+      if (getRes.status === 200) {
+        sha = getRes.data.sha;
+      }
+    } catch (e) {
+      // If 404, we leave sha as null
+    }
+
+    const body = {
+      message: `chore: sync ${filename} from local run`,
+      content: base64Content,
+      branch: branch
+    };
+    if (sha) {
+      body.sha = sha;
+    }
+
+    await axios.put(`https://api.github.com/repos/${repo}/contents/${filename}`, body, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    console.log(`[GitHub Sync] Successfully committed ${filename} to GitHub.`);
+    return true;
+  } catch (err) {
+    console.error(`[GitHub Sync] Failed to upload ${filename}:`, err.message);
+  }
+  return false;
+}
+
 // Main execution loop
 async function run() {
   console.log('Starting Scraper Orchestrator...');
-  const history = loadHistory();
+  
+  const isGithubActions = process.env.GITHUB_ACTIONS === 'true';
   const isDryRun = process.argv.includes('--dry-run');
+
+  // Sync config/history from GitHub if running locally
+  if (!isGithubActions) {
+    await downloadFromGithub('history.json');
+    await downloadFromGithub('email_logs.json');
+  }
+
+  const history = loadHistory();
   const runOnlyScript = process.env.RUN_ONLY_SCRIPT || process.argv.find(arg => arg.startsWith('--script='))?.split('=')[1];
   if (runOnlyScript) {
     console.log(`Running in SINGLE script mode: ONLY running ${runOnlyScript}`);
@@ -473,6 +578,12 @@ async function run() {
     fs.rmSync(TEMP_DIR, { recursive: true, force: true });
   } catch (err) {
     // Ignore if already deleted
+  }
+
+  // Sync history/logs back to GitHub if running locally
+  if (!isGithubActions && !isDryRun) {
+    await uploadToGithub('history.json');
+    await uploadToGithub('email_logs.json');
   }
 
   console.log('All scraper execution finished.');

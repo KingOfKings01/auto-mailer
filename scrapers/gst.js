@@ -18,8 +18,6 @@ export async function scrape() {
   
   try {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    // Wait for the news items to load
-    await page.waitForTimeout(4000);
 
     // Maintenance check
     const bodyText = await page.innerText('body');
@@ -28,6 +26,13 @@ export async function scrape() {
       console.warn('[GST Scraper] GST Website is down for maintenance.');
       await browser.close();
       return [];
+    }
+
+    // Wait for the news items selector to appear
+    try {
+      await page.waitForSelector('li.news-item--container', { timeout: 15000 });
+    } catch (selectorErr) {
+      console.warn('[GST Scraper] Selector li.news-item--container did not appear within timeout.');
     }
 
     const newsItems = await page.$$('li.news-item--container');
