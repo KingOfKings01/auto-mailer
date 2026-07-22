@@ -207,7 +207,7 @@ async function sendEmail(item, summaryText, attachments, scraperFile) {
   if (!CONFIG.EMAIL_SENDER || !CONFIG.EMAIL_PASSWORD || isDryRun) {
     console.log(`--- ${isDryRun ? 'DRY RUN' : 'NO CREDENTIALS'}: EMAIL CONTENT ---`);
     console.log(`To: ${recipient}`);
-    console.log(`Subject: GST Alert: ${item.title}`);
+    console.log(`Subject: [${item.date || 'N/A'}] GST Alert: ${item.title}`);
     console.log(`Body:\n${summaryText}`);
     console.log(`Attachments: ${attachments.map(a => a.filename).join(', ')}`);
     console.log('------------------------------');
@@ -233,7 +233,7 @@ async function sendEmail(item, summaryText, attachments, scraperFile) {
   const mailOptions = {
     from: CONFIG.EMAIL_SENDER,
     to: recipient,
-    subject: `GST Alert: ${item.title}`,
+    subject: `[${item.date || 'N/A'}] GST Alert: ${item.title}`,
     html: `
       <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
