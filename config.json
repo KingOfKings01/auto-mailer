@@ -1,6 +1,19 @@
 {
   "ALARMS": [
     {
+      "id": "alarm_1784790520475",
+      "time": "04:00",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0
+      ]
+    },
+    {
       "id": "alarm_1784195531332",
       "time": "09:00",
       "days": [
@@ -11,23 +24,10 @@
         5,
         6
       ]
-    },
-    {
-      "id": "alarm_1784783593481",
-      "time": "10:45",
-      "days": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        0
-      ]
     }
   ],
   "SCRAPER_ALARMS": {
-    "gst.js": "alarm_1784783593481"
+    "gst.js": "alarm_1784790520475"
   },
   "EMAIL_RECIPIENTS": {
     "gst.js": "shabanamulla@cnkindia.com"
