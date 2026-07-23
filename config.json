@@ -28,5 +28,8 @@
   ],
   "SCRAPER_ALARMS": {
     "gst.js": "alarm_1784198630602"
+  },
+  "EMAIL_RECIPIENTS": {
+    "gst.js": "shabanamulla@cnkindia.com"
   }
 }
