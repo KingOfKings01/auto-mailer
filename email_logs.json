@@ -52,5 +52,45 @@
       "for_publishing_monthly_gst_revenue_june_2026.pdf",
       "advisory_content.docx"
     ]
+  },
+  {
+    "timestamp": "2026-07-31T23:29:53.993Z",
+    "recipient": "shabanamulla@cnkindia.com",
+    "subject": "GST Alert: Advisory on Keeping on Hold the Proposed e-Way Bill Enhancements",
+    "content": "Dear Sir/Madam,\n\nWe have analyzed the latest updates and prepared a brief summary for your reference.\n\nOur preliminary analysis:\n\nNature of change: e-Way Bill System Enhancements (Implementation on hold)\nWho is primarily impacted: Relevant business divisions, IT teams, and taxpayers who were preparing for the previously announced e-Way Bill changes.\n\nKey changes:\n*   The implementation of proposed enhancements to the e-Way Bill system, previously announced via advisories dated June 9th, 2026, and June 17th, 2026, and related FAQs issued on July 2nd, 2026, has been kept on hold until further notice.\n*   The scheduled implementation date of August 1st, 2026, for these enhancements is no longer applicable.\n*   All related advisories and FAQs will be withdrawn from the GST Portal.\n\nRecommended actions:\n*   No changes are currently required to be implemented in the production environment pertaining to the aforementioned e-Way Bill enhancements.\n*   Organizations that had commenced preparations or system changes in anticipation of these enhancements may pause or cease such activities until further communication.\n*   Continue to monitor official GSTN communications for any future updates regarding these enhancements.\n\nPlease find attached the relevant documents. We are available to discuss the impact on your specific business processes.\n\nRegards,\n\nTaxation Team",
+    "attachmentCount": 1,
+    "attachmentTitles": [
+      "advisory_content.docx"
+    ]
+  },
+  {
+    "timestamp": "2026-07-31T23:29:59.552Z",
+    "recipient": "shabanamulla@cnkindia.com",
+    "subject": "GST Alert: Advisory on Re-Computation of Interest under Table 5.1 of GSTR-3B",
+    "content": "Dear Sir/Madam,\n\nWe have analyzed the latest updates and prepared a brief summary for your reference.\n\nOur preliminary analysis:\n\nNature of change: RETURNS\nWho is primarily impacted: Relevant business divisions and taxpayers.\n\nKey changes:\n*   An advisory has been issued regarding the system-calculated interest for the February 2026 period, which was incorrectly calculated and auto-populated in Table 5.1 of the March 2026 GSTR-3B.\n*   The advisory provides a detailed process that taxpayers must follow for the correct calculation of this interest.\n\nRecommended actions:\n*   Review your March 2026 GSTR-3B, specifically Table 5.1, to verify the interest calculated for the February 2026 period.\n*   Adhere strictly to the process outlined in the attached advisory to ensure accurate re-computation and declaration of interest.\n\nPlease find attached the relevant documents. We are available to discuss the impact on your specific business processes.\n\nRegards,\n\nTaxation Team",
+    "attachmentCount": 1,
+    "attachmentTitles": [
+      "advisory_content.docx"
+    ]
+  },
+  {
+    "timestamp": "2026-07-31T23:30:07.353Z",
+    "recipient": "shabanamulla@cnkindia.com",
+    "subject": "GST Alert: Pre-deposit Percentage in the GST Portal",
+    "content": "Dear Sir/Madam,\n\nWe have analyzed the latest updates and prepared a brief summary for your reference.\n\nOur preliminary analysis:\n\nNature of change: APPEAL\nWho is primarily impacted: Relevant business divisions and taxpayers.\n\nKey changes:\n*   Previously, when filing an appeal in Form APL-01 on the GST portal, the pre-deposit percentage was auto-populated as 10% (in accordance with Section 107(6) of the CGST Act, 2017) and was non-editable.\n*   This restriction caused difficulties for taxpayers, especially when pre-deposits had already been made or when demand amounts were incorrectly reflected.\n*   **Effective April 6th, 2026, GSTN has made the pre-deposit field editable at the time of filing the appeal.**\n*   Taxpayers can now modify the pre-deposit percentage as applicable to their specific case and calculate and pay the required amount accordingly.\n*   The appellate authority will verify the correctness of the pre-deposit amount and the mode of payment during the adjudication of the appeal.\n\nRecommended actions:\n*   Taxpayers and relevant business divisions should note the new functionality available for filing appeals in Form APL-01 on the GST portal.\n*   Utilize the newly editable pre-deposit field to ensure accurate calculation and payment of the required pre-deposit amount based on the specifics of each appeal.\n*   Review existing internal appeal filing processes to incorporate this flexibility and ensure adherence to the correct pre-deposit requirements.\n\nPlease find attached the relevant documents. We are available to discuss the impact on your specific business processes.\n\nRegards,\n\nTaxation Team",
+    "attachmentCount": 1,
+    "attachmentTitles": [
+      "advisory_content.docx"
+    ]
+  },
+  {
+    "timestamp": "2026-07-31T23:30:15.354Z",
+    "recipient": "shabanamulla@cnkindia.com",
+    "subject": "GST Alert: Subject: Difficulty in filing appeals on the GST portal in cases where adjudication orders reflect \"NIL\" demand due to prior voluntary payment – reg.",
+    "content": "Dear Sir/Madam,\n\nWe have analyzed the latest updates and prepared a brief summary for your reference.\n\nOur preliminary analysis:\n\nNature of change: APPEAL\nWho is primarily impacted: Relevant business divisions and taxpayers.\n\nKey changes:\n*   Taxpayers are encountering difficulties in filing appeals (APL-01) on the GST portal against adjudication orders that reflect a \"NIL\" demand, despite the existence of a dispute regarding tax liability.\n*   This issue typically arises when voluntary payments (tax, interest, or penalty) are made at the Show Cause Notice (SCN) stage without admitting liability, and the adjudicating authority subsequently issues a \"NIL\" demand order, treating the prior payment as full discharge.\n*   The GST portal's Demand and Collection Register (DCR) reflects a zero-value demand, which prevents the filing of an appeal and may display an error message such as: \"Disputed amount cannot be more than demand amount itself.\"\n*   It is clarified that payments made during the SCN stage without explicit admission of liability do not constitute acceptance of the demand, and taxpayers retain their statutory right to appeal under Section 107 of the Central Goods and Services Tax Act, 2017.\n\nRecommended actions:\n*   In situations where a dispute regarding liability exists but is not captured by the department in the demand order, and payment has been made prior to the issuance of the demand order, taxpayers are advised to approach the adjudicating authority.\n*   File a rectification request using the available option on the GST portal to obtain a rectification order that accurately reflects the correct demand amount.\n*   Upon receipt of the rectified order, proceed to file the appeal on the GST portal within the prescribed time limits.\n\nPlease find attached the relevant documents. We are available to discuss the impact on your specific business processes.\n\nRegards,\n\nTaxation Team",
+    "attachmentCount": 1,
+    "attachmentTitles": [
+      "advisory_content.docx"
+    ]
   }
 ]

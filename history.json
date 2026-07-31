@@ -89,6 +89,42 @@
       "sent": true,
       "sentAt": "2026-07-09T04:14:57.554Z",
       "source": "gst"
+    },
+    "b542a3e6ff07": {
+      "id": "b542a3e6ff07",
+      "title": "Advisory on Keeping on Hold the Proposed e-Way Bill Enhancements",
+      "date": "Jul 29th, 2026",
+      "category": "E-WAY BILL",
+      "sent": true,
+      "sentAt": "2026-07-31T23:29:53.994Z",
+      "source": "gst"
+    },
+    "33307bcb9ae8": {
+      "id": "33307bcb9ae8",
+      "title": "Advisory on Re-Computation of Interest under Table 5.1 of GSTR-3B",
+      "date": "Apr 16th, 2026",
+      "category": "RETURNS",
+      "sent": true,
+      "sentAt": "2026-07-31T23:29:59.553Z",
+      "source": "gst"
+    },
+    "f6d428dcf989": {
+      "id": "f6d428dcf989",
+      "title": "Pre-deposit Percentage in the GST Portal",
+      "date": "Apr 10th, 2026",
+      "category": "APPEAL",
+      "sent": true,
+      "sentAt": "2026-07-31T23:30:07.353Z",
+      "source": "gst"
+    },
+    "d0bde564f3c9": {
+      "id": "d0bde564f3c9",
+      "title": "Subject: Difficulty in filing appeals on the GST portal in cases where adjudication orders reflect \"NIL\" demand due to prior voluntary payment – reg.",
+      "date": "Apr 3rd, 2026",
+      "category": "APPEAL",
+      "sent": true,
+      "sentAt": "2026-07-31T23:30:15.356Z",
+      "source": "gst"
     }
   }
 }
